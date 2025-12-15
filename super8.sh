@@ -1,6 +1,8 @@
 #!/bin/bash
 
-MAIN_ASSET="assets/road.mov"
+# Accept input and output paths as arguments, or use defaults
+MAIN_ASSET="${1:-assets/road.mov}"
+OUTPUT_PATH="${2:-output/output.mov}"
 MASK_ASSET="assets/mask_0.mov"
 
 FILMBURN_INTERVAL=2
@@ -36,7 +38,7 @@ for i in {0..2}; do
 done
 
 # Add the filter complex and output with strict duration limit matching MAIN_ASSET
-FFMPEG_CMD+=" -filter_complex \"$FILTER_COMPLEX\" -map \"[grain]\" -t $MAIN_DURATION -shortest output/output.mov"
+FFMPEG_CMD+=" -filter_complex \"$FILTER_COMPLEX\" -map \"[grain]\" -t $MAIN_DURATION -shortest $OUTPUT_PATH"
 
 # Execute the command
 eval $FFMPEG_CMD

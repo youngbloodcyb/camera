@@ -33,12 +33,14 @@ ENV NODE_ENV=production
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/index.ts .
+COPY --from=prerelease /usr/src/app/index.html .
+COPY --from=prerelease /usr/src/app/client.ts .
 COPY --from=prerelease /usr/src/app/package.json .
 COPY --from=prerelease /usr/src/app/super8.sh .
 COPY --from=prerelease /usr/src/app/assets ./assets
 
-# Create output directory and set ownership to bun user
-RUN mkdir -p output && chown -R bun:bun /usr/src/app
+# Create output and uploads directories and set ownership to bun user
+RUN mkdir -p output uploads && chown -R bun:bun /usr/src/app
 
 # run the app
 USER bun
