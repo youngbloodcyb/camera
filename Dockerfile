@@ -3,8 +3,8 @@
 FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
-# Install ffmpeg and ffprobe
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# Install ffmpeg, ffprobe, and curl
+RUN apt-get update && apt-get install -y ffmpeg curl && rm -rf /var/lib/apt/lists/*
 
 # install dependencies into temp directory
 # this will cache them and speed up future builds
@@ -37,7 +37,13 @@ COPY --from=prerelease /usr/src/app/index.html .
 COPY --from=prerelease /usr/src/app/client.ts .
 COPY --from=prerelease /usr/src/app/package.json .
 COPY --from=prerelease /usr/src/app/super8.sh .
-COPY --from=prerelease /usr/src/app/assets ./assets
+
+# Download assets from Vercel blob storage
+RUN mkdir -p assets && \
+    curl -o assets/filmburn_0.mp4 https://gglro04nqq8zhlwp.public.blob.vercel-storage.com/assets/filmburn_0.mp4 && \
+    curl -o assets/filmburn_1.mp4 https://gglro04nqq8zhlwp.public.blob.vercel-storage.com/assets/filmburn_1.mp4 && \
+    curl -o assets/filmburn_2.mp4 https://gglro04nqq8zhlwp.public.blob.vercel-storage.com/assets/filmburn_2.mp4 && \
+    curl -o assets/mask_0.mov https://gglro04nqq8zhlwp.public.blob.vercel-storage.com/assets/mask_0.mov
 
 # Create output and uploads directories and set ownership to bun user
 RUN mkdir -p output uploads && chown -R bun:bun /usr/src/app
